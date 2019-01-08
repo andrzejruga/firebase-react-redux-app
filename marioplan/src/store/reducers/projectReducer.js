@@ -7,6 +7,11 @@ const initState = {
 };
 
 const projectReducer = (state = initState, action) => {
+    // we could use if statement, but this time we use switch statement
+    switch (action.type) {
+        case 'CREATE_PROJECT':
+            console.log('created project', action.project)
+    }
     return state
 }
 
