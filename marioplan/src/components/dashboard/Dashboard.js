@@ -4,11 +4,14 @@ import ProjectList from '../projects/ProjectList';
 import { connect } from 'react-redux'; // HOC
 import { firestoreConnect } from 'react-redux-firebase'; // HOC
 import { compose } from 'redux'; // we need it to compose 2 HOCs
+import { Redirect } from 'react-router-dom';
 
 class Dashboard extends Component {
     render() {
         // console.log(this.props);
-        const { projects } = this.props;
+        const { projects, auth } = this.props;
+        if (!auth.uid) return <Redirect to='/signin' />
+
         return (
             <div className="dashboard container">
                 <div className="row">
@@ -29,7 +32,8 @@ const mapStateToProps = (state) => {
     console.log(state);
     return {
         // projects: state.project.projects // project - property from rootReducer, projects from projectReducer
-        projects: state.firestore.ordered.projects // path taken from object loged in console - now we take it directly from firebase
+        projects: state.firestore.ordered.projects, // path taken from object loged in console - now we take it directly from firebase
+        auth: state.firebase.auth
     }
 }
 
