@@ -15,9 +15,12 @@ const store = createStore(rootReducer,
     compose(
         applyMiddleware(thunk.withExtraArgument({ getFirebase, getFirestore })),
         reduxFirestore(fbConfig), // store enhancer
-        reactReduxFirebase(fbConfig, {attachAuthIsReady: true}) // store enhancer
+        reactReduxFirebase(fbConfig, {useFirestoreForProfile: true, userProfile: 'users', attachAuthIsReady: true}) // store enhancer
     )
 ); // we're passing root reducer that combines single reducers into one
+
+// useFirestoreForProfile - we want firebase reducer to use our database (firestore)
+// to sync to the profile object on the state -> state.firebase.profile
 
 // thanks to attachAuthIsReady and this below we're not rendering this to the DOM
 // until firebase auth is ready, so we don't see login and signin links for a few seconds
