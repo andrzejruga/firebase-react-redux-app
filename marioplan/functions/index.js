@@ -2,6 +2,12 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase); // configuration to initialize app
 
+// three lines below recommended to paste by warning in firebase app - Net Ninja didn't get it
+const firestore = admin.firestore();
+const settings = {timestampsInSnapshots: true};
+firestore.settings(settings);
+
+
 exports.helloWorld = functions.https.onRequest((request, response) => {
     response.send("Hello guys from Firebase!");
 });
@@ -9,17 +15,38 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
 const createNotification = ((notification) => {
     return admin.firestore().collection('notifications').add(notification)
         .then(doc => console.log('notification added', doc));
-})
+});
 
-exports.projectCreated = functions.firestore.document('projects/{projectId}').onCreate(doc => {
+exports.projectCreated = functions.firestore
+    .document('projects/{projectId}')
+    .onCreate(doc => {
 
-    const project = doc.data();
-    const notification = {
-        content: 'Added a new project',
-        user: `${project.authorFirstName} ${project.authorLastName}`,
-        time: admin.firestore.FieldValue.serverTimestamp()
-    }
+        const project = doc.data();
+        const notification = {
+            content: 'Added a new project',
+            user: `${project.authorFirstName} ${project.authorLastName}`,
+            time: admin.firestore.FieldValue.serverTimestamp()
+        }
 
-    return createNotification(notification);
+        return createNotification(notification);
 
-})
+    });
+
+exports.userJoined = functions.auth.user()
+    .onCreate(user => {
+
+        return admin.firestore().collection('users')
+            .doc(user.uid).get().then(doc => {
+
+                const newUser = doc.data();
+                const notification = {
+                    content: 'Joined the party',
+                    user: `${newUser.firstName} ${newUser.lastName}`,
+                    time: admin.firestore.FieldValue.serverTimestamp()
+                }
+
+                return createNotification(notification);
+
+            });
+
+    });
