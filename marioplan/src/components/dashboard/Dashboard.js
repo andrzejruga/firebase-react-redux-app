@@ -9,7 +9,7 @@ import { Redirect } from 'react-router-dom';
 class Dashboard extends Component {
     render() {
         // console.log(this.props);
-        const { projects, auth } = this.props;
+        const { projects, auth, notifications } = this.props;
         if (!auth.uid) return <Redirect to='/signin' />
 
         return (
@@ -19,7 +19,7 @@ class Dashboard extends Component {
                         <ProjectList projects={projects} />
                     </div>
                     <div className="col s12 m5 offset-m1">
-                        <Notifications />
+                        <Notifications notifications={notifications} />
                     </div>
                 </div>
             </div>
@@ -29,17 +29,19 @@ class Dashboard extends Component {
 
 // here we're mapping our state from the store to the props in this component
 const mapStateToProps = (state) => {
-    console.log(state);
+    // console.log(state);
     return {
         // projects: state.project.projects // project - property from rootReducer, projects from projectReducer
         projects: state.firestore.ordered.projects, // path taken from object loged in console - now we take it directly from firebase
-        auth: state.firebase.auth
+        auth: state.firebase.auth,
+        notifications: state.firestore.ordered.notifications
     }
 }
 
 export default compose(
     connect(mapStateToProps),
     firestoreConnect([
-        { collection: 'projects' }
+        { collection: 'projects' },
+        { collection: 'notifications', limit: 3 } // limit to show just certain amount of notifiacations
     ])
 )(Dashboard);
