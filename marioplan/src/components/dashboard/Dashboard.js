@@ -41,7 +41,7 @@ const mapStateToProps = (state) => {
 export default compose(
     connect(mapStateToProps),
     firestoreConnect([
-        { collection: 'projects' },
-        { collection: 'notifications', limit: 3 } // limit to show just certain amount of notifiacations
+        { collection: 'projects', orderBy: ['createdAt', 'desc'] },
+        { collection: 'notifications', limit: 3, orderBy: ['time', 'desc'] } // limit to show just certain amount of notifiacations, orderBy: by time in descending order
     ])
 )(Dashboard);
